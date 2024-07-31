@@ -33,13 +33,13 @@ func ConnectToDB() {
 		&models.VariantOption{},
 		&models.ProductItem{},
 		&models.ProductImage{},
-		&models.Customer{},
-		&models.Order{},
-		&models.OrderItem{},
-		&models.Cart{},
-		&models.CartItem{},
-		&models.Address{},
-		&models.Country{},
+		// &models.Customer{},
+		// &models.Order{},
+		// &models.OrderItem{},
+		// &models.Cart{},
+		// &models.CartItem{},
+		// &models.Address{},
+		// &models.Country{},
 	)
 	if err != nil {
 		log.Fatalf("failed to migrate database schema: %v", err)

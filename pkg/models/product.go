@@ -18,7 +18,7 @@ type Store struct {
 	gorm.Model
 	Name        string `gorm:"type:varchar(255);not null;index" json:"name"`
 	Description string `gorm:"type:text" json:"description"`
-	AdminID     uint   `gorm:"not null" json:"admin_id"`
+	AdminID     uint   `gorm:"not null;index" json:"admin_id"`
 	Admin       *Admin `gorm:"foreignKey:AdminID"`
 	Categories  []Category
 	Products    []Product  `json:"-"`
@@ -29,16 +29,15 @@ type Store struct {
 // Category model
 type Category struct {
 	gorm.Model
-	Name             string    `gorm:"type:varchar(255);not null;index" json:"name"`
-	Description      string    `gorm:"type:text" json:"description"`
-	StoreID          uint      `gorm:"not null;index" json:"store_id"`
-	Store            *Store    `gorm:"foreignKey:StoreID"`
-	ParentCategoryID *uint     `json:"parent_category_id,omitempty"`
-	ParentCategory   *Category `gorm:"foreignKey:ParentCategoryID"`
-	// Subcategories    []*Category `gorm:"foreignKey:ParentCategoryID"`
-	Subcategories []*Category `gorm:"-"`
-	Products      []Product   `json:"-"`
-	Variants      []Variant   `json:"-"`
+	Name             string      `gorm:"type:varchar(255);not null;index" json:"name"`
+	Description      string      `gorm:"type:text" json:"description"`
+	StoreID          uint        `gorm:"not null;index" json:"store_id"`
+	Store            *Store      `gorm:"foreignKey:StoreID"`
+	ParentCategoryID *uint       `gorm:"index" json:"parent_category_id,omitempty"`
+	ParentCategory   *Category   `gorm:"foreignKey:ParentCategoryID"`
+	Subcategories    []*Category `gorm:"-"`
+	Products         []Product   `json:"-"`
+	Variants         []Variant   `json:"-"`
 }
 
 // Product model
@@ -47,8 +46,8 @@ type Product struct {
 	Name        string    `gorm:"type:varchar(255);not null;index" json:"name"`
 	Description string    `gorm:"type:text" json:"description"`
 	Rating      float32   `json:"-"`
-	IsFeatured  bool      `json:"is_featured"`
-	IsArchived  bool      `json:"is_archived"`
+	IsFeatured  bool      `gorm:"index" json:"is_featured"`
+	IsArchived  bool      `gorm:"index" json:"is_archived"`
 	HasVariants bool      `json:"has_variants"`
 	CategoryID  uint      `gorm:"not null;index" json:"category_id"`
 	Category    *Category `gorm:"foreignKey:CategoryID"`
@@ -72,7 +71,7 @@ type Variant struct {
 // VariantOption model
 type VariantOption struct {
 	gorm.Model
-	Value       string   `gorm:"type:varchar(255);not null" json:"value"`
+	Value       string   `gorm:"type:varchar(255);not null;index" json:"value"`
 	Description string   `gorm:"type:text" json:"description"`
 	Weight      int      `json:"weight"`
 	VariantID   uint     `gorm:"not null;index" json:"variant_id"`
@@ -86,8 +85,8 @@ type ProductItem struct {
 	Product         *Product `gorm:"foreignKey:ProductID"`
 	SKU             string   `gorm:"type:varchar(255);not null;uniqueIndex" json:"sku"`
 	Quantity        int      `gorm:"not null" json:"quantity"`
-	Price           float64  `gorm:"type:float;not null" json:"price"`
-	DiscountedPrice float64  `gorm:"type:float" json:"discounted_price,omitempty"`
+	Price           float64  `gorm:"type:float;not null;index" json:"price"`
+	DiscountedPrice float64  `gorm:"type:float;index" json:"discounted_price,omitempty"`
 }
 
 // ProductImage model
@@ -95,18 +94,18 @@ type ProductImage struct {
 	gorm.Model
 	ProductID uint     `gorm:"not null;index" json:"product_id"`
 	Product   *Product `gorm:"foreignKey:ProductID"`
-	ImageURL  string   `gorm:"type:varchar(255); not null" json:"image_url"`
+	ImageURL  string   `gorm:"type:varchar(255);not null" json:"image_url"`
 }
 
 // Customer model
 type Customer struct {
 	gorm.Model
 	Username  string   `gorm:"type:varchar(255);not null;uniqueIndex" json:"username"`
-	Password  string   `gorm:"type:varchar(255); not null" json:"-"`
+	Password  string   `gorm:"type:varchar(255);not null" json:"-"`
 	Email     string   `gorm:"type:varchar(255);not null;uniqueIndex" json:"email"`
 	StoreID   uint     `gorm:"not null;index" json:"store_id"`
 	Store     *Store   `gorm:"foreignKey:StoreID"`
-	AddressID uint     `json:"address_id,omitempty"`
+	AddressID uint     `gorm:"index" json:"address_id,omitempty"`
 	Address   *Address `gorm:"foreignKey:AddressID"`
 	Carts     []Cart
 	Orders    []Order
@@ -116,8 +115,8 @@ type Customer struct {
 type Order struct {
 	gorm.Model
 	OrderNumber   string    `gorm:"type:varchar(255);not null;uniqueIndex" json:"order_number"`
-	PaymentStatus string    `gorm:"type:varchar(50); not null" json:"payment_status"`
-	OrderStatus   string    `gorm:"type:varchar(50); not null" json:"order_status"`
+	PaymentStatus string    `gorm:"type:varchar(50);not null;index" json:"payment_status"`
+	OrderStatus   string    `gorm:"type:varchar(50);not null;index" json:"order_status"`
 	StoreID       uint      `gorm:"not null;index" json:"store_id"`
 	Store         *Store    `gorm:"foreignKey:StoreID"`
 	CustomerID    uint      `gorm:"not null;index" json:"customer_id"`
@@ -156,8 +155,8 @@ type CartItem struct {
 // Address model
 type Address struct {
 	gorm.Model
-	City      string   `gorm:"type:varchar(255);not null" json:"city"`
-	Pincode   string   `gorm:"type:varchar(255);not null" json:"pincode"`
+	City      string   `gorm:"type:varchar(255);not null;index" json:"city"`
+	Pincode   string   `gorm:"type:varchar(255);not null;index" json:"pincode"`
 	CountryID uint     `gorm:"not null;index" json:"country_id"`
 	Country   *Country `gorm:"foreignKey:CountryID"`
 }
@@ -165,5 +164,5 @@ type Address struct {
 // Country model
 type Country struct {
 	gorm.Model
-	Country string `gorm:"type:varchar(255);not null" json:"country"`
+	Country string `gorm:"type:varchar(255);not null;uniqueIndex" json:"country"`
 }
