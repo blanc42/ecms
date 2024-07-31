@@ -43,6 +43,11 @@ func (h *AdminHandler) Signup(c *gin.Context) {
 		Password: hashedPassword,
 	}
 
+	if h.DB == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database not initialized"})
+		return
+	}
+
 	if err := h.DB.Create(&admin).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create admin"})
 		return

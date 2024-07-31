@@ -1,6 +1,6 @@
 module github.com/blanc42/ecms
 
-go 1.22.4
+go 1.22.2
 
 require (
 	github.com/gin-contrib/cors v1.7.2

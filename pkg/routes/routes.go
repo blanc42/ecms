@@ -16,7 +16,7 @@ func SetupRouter(re *gin.Engine) {
 	re.Use(cors.New(config))
 	re.RedirectTrailingSlash = false
 
-	r := re.Group("/api/")
+	r := re.Group("/api")
 
 	r.Handle("GET", "/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
