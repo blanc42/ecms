@@ -14,7 +14,7 @@ func SetupRouter(re *gin.Engine) {
 	config.AllowOrigins = []string{"http://localhost:3000", "https://dhukan.vercel.app"} // Add your frontend URL
 	config.AllowCredentials = true
 	re.Use(cors.New(config))
-	re.RedirectTrailingSlash = false
+	re.RedirectTrailingSlash = true
 
 	r := re.Group("/api")
 

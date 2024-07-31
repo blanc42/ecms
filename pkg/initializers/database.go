@@ -4,7 +4,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/blanc42/ecms/pkg/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -24,24 +23,25 @@ func ConnectToDB() {
 	}
 
 	// Migrate the schema
-	err = DB.AutoMigrate(
-		&models.Admin{},
-		&models.Store{},
-		&models.Category{},
-		&models.Product{},
-		&models.Variant{},
-		&models.VariantOption{},
-		&models.ProductItem{},
-		&models.ProductImage{},
-		// &models.Customer{},
-		// &models.Order{},
-		// &models.OrderItem{},
-		// &models.Cart{},
-		// &models.CartItem{},
-		// &models.Address{},
-		// &models.Country{},
-	)
-	if err != nil {
-		log.Fatalf("failed to migrate database schema: %v", err)
-	}
+	// err = DB.AutoMigrate(
+	// &models.Admin{},
+	// &models.Store{},
+	// &models.Category{},
+	// &models.Product{},
+	// &models.Variant{},
+	// &models.VariantOption{},
+	// &models.ProductItem{},
+	// &models.ProductImage{},
+	// &models.Customer{},
+	// &models.Order{},
+	// &models.OrderItem{},
+	// &models.Cart{},
+	// &models.CartItem{},
+	// &models.Address{},
+	// &models.Country{},
+	// )
+
+	// if err != nil {
+	// 	log.Fatalf("failed to migrate database schema: %v", err)
+	// }
 }
