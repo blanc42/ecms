@@ -4,15 +4,18 @@ import (
 	"github.com/blanc42/ecms/pkg/handlers"
 	"github.com/blanc42/ecms/pkg/initializers"
 	"github.com/blanc42/ecms/pkg/middleware"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter(r *gin.Engine) {
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Hello, World!",
-		})
-	})
+
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000", "https://dhukan.vercel.app"} // Add your frontend URL
+	config.AllowCredentials = true
+	r.Use(cors.New(config))
+	r.RedirectTrailingSlash = false
+
 	AdminHandler := handlers.NewAdminHandler(initializers.DB)
 	storeHandler := handlers.NewStoreHandler(initializers.DB)
 	categoryHandler := handlers.NewCategoryHandler(initializers.DB)
@@ -22,11 +25,12 @@ func SetupRouter(r *gin.Engine) {
 
 	adminOnly := r.Group("/")
 	adminOnly.Use(middleware.AdminAuthMiddleware())
+	adminOnly.GET("/admin", AdminHandler.GetAdmin)
 
 	storeGroup := r.Group("/stores")
 	storeGroup.Use(middleware.AdminAuthMiddleware())
 	{
-		storeGroup.POST("/", storeHandler.CreateStore)
+		adminOnly.POST("/stores", storeHandler.CreateStore)
 		storeGroup.GET("/:store_id", storeHandler.GetStore)
 		storeGroup.PUT("/:store_id", storeHandler.UpdateStore)
 		storeGroup.DELETE("/:store_id", storeHandler.DeleteStore)

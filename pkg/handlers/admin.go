@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/blanc42/ecms/pkg/models"
@@ -59,7 +60,7 @@ func (h *AdminHandler) Signup(c *gin.Context) {
 }
 
 type LoginInput struct {
-	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -71,12 +72,13 @@ func (h *AdminHandler) Login(c *gin.Context) {
 	}
 
 	var admin models.Admin
-	if err := h.DB.Where("username = ?", input.Username).First(&admin).Error; err != nil {
+	if err := h.DB.Where("email = ?", input.Email).Preload("Stores").First(&admin).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
 	if err := utils.ComparePasswords(admin.Password, input.Password); err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
@@ -89,5 +91,35 @@ func (h *AdminHandler) Login(c *gin.Context) {
 
 	c.SetCookie("auth-token", token, 3600*24, "/", "", false, true) // Set token as http only cookie
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "data": admin})
+}
+
+type AdminDTO struct {
+	ID       uint           `json:"id"`
+	Username string         `json:"username"`
+	Email    string         `json:"email"`
+	Stores   []models.Store `json:"stores"`
+}
+
+func (h *AdminHandler) GetAdmin(c *gin.Context) {
+	adminID, exists := c.Get("admin_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var admin models.Admin
+	if err := h.DB.Preload("Stores").First(&admin, adminID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Admin not found"})
+		return
+	}
+
+	adminDTO := AdminDTO{
+		ID:       admin.ID,
+		Username: admin.Username,
+		Email:    admin.Email,
+		Stores:   admin.Stores,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": adminDTO})
 }

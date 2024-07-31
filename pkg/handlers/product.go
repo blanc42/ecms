@@ -262,3 +262,8 @@ func (h *ProductHandler) ListProducts(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": products, "error": nil})
 }
+
+
+func (h *ProductHandler) GetFilters(c *gin.Context){
+		
+}

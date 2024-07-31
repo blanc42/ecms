@@ -7,10 +7,10 @@ import (
 // Admin model
 type Admin struct {
 	gorm.Model
-	Username string `gorm:"type:varchar(255);not null;uniqueIndex" json:"username"`
-	Password string `gorm:"type:varchar(255);not null" json:"-"`
-	Email    string `gorm:"type:varchar(255);not null;uniqueIndex" json:"email"`
-	Stores   []Store
+	Username string  `gorm:"type:varchar(255);not null;uniqueIndex" json:"username"`
+	Password string  `gorm:"type:varchar(255);not null" json:"-"`
+	Email    string  `gorm:"type:varchar(255);not null;uniqueIndex" json:"email"`
+	Stores   []Store `gorm:"foreignKey:AdminID"`
 }
 
 // Store model
@@ -46,7 +46,7 @@ type Product struct {
 	gorm.Model
 	Name        string    `gorm:"type:varchar(255);not null;index" json:"name"`
 	Description string    `gorm:"type:text" json:"description"`
-	Rating      float32   `json:"rating"`
+	Rating      float32   `json:"-"`
 	IsFeatured  bool      `json:"is_featured"`
 	IsArchived  bool      `json:"is_archived"`
 	HasVariants bool      `json:"has_variants"`
