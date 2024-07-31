@@ -8,13 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(r *gin.Engine) {
+func SetupRouter(re *gin.Engine) {
 
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:3000", "https://dhukan.vercel.app"} // Add your frontend URL
 	config.AllowCredentials = true
-	r.Use(cors.New(config))
-	r.RedirectTrailingSlash = false
+	re.Use(cors.New(config))
+	re.RedirectTrailingSlash = false
+
+	r := re.Group("/api/")
 
 	AdminHandler := handlers.NewAdminHandler(initializers.DB)
 	storeHandler := handlers.NewStoreHandler(initializers.DB)
